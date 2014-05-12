@@ -1,14 +1,16 @@
 #include <stdlib.h>
+#include <time.h>
 #include <math.h>
 #include "bool.h"
 #include "map.h"
+#include "motor.h"
 
 #define MAX 9999999
 
-float radius = 10;//=====================This is an important number
-float localRadius = 20; //local search radius
+float radius = 30;//=====================This is an important number
+float localRadius = 100; //local search radius
 
-float angle = 0;
+float angle = 90;
 
 float startPointX = 0.00;
 float startPointY = 0.00;
@@ -18,6 +20,12 @@ float endPointY = 0.00;
 
 float locationX = 0.00;
 float locationY = 0.00;
+
+int localP = 0;
+
+double timeStart = 0;
+double timeNow = 0;
+double timePrefer = 0;
 
 float localMap[8][2];
 
@@ -55,9 +63,50 @@ step *addStep(step *end, float x, float y, int number, short father, float heuri
 };
 
 //Move Robot
-void move(float _distance, int _angle){
+void move(float _distance, float _angle){
+	float _turn = _angle - angle;
+
+	timeStart = clock();
+
+	if(_turn == 0)
+	{
+		//do nothing
+	}
+	else if(_turn == 45 || _turn == -315)
+	{
+		Movement(3);
+	}
+	else if(_turn == 90 || _turn == -270)
+	{
+		Movement(4);
+	}
+	else if(_turn == 135 || _turn == -225)
+	{
+		Movement(5);
+	}
+	else if(_turn == 180 || _turn == -180)
+	{
+		Movement(6);
+	}
+	else if(_turn == 225 || _turn == -135)
+	{
+		Movement(7);
+	}
+	else if(_turn == 270 || _turn == -90)
+	{
+		Movement(8);
+	}
+	else if(_turn == 315 || _turn == -45)
+	{
+		Movement(9);
+	}
+	_angle = angle;
 	//movement
 	//if(_distance == -1)
+};
+
+void stop(){
+	Movement(0);
 };
 
 //location Robot
@@ -66,14 +115,15 @@ void location(){};
 //if the robot reach the purpose place
 bool ifReach(){
 	location();
-	if(locationX == endPointX && locationY == endPointY)
+	timeNow = clock();
+	if( timeNow - timeStart >= timePrefer)
 	{
-		return true;
+		if(abs(locationX-endPointX) < 5 && abs(locationY-endPointY) < 5)
+		{
+			return true;
+		}
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 };
 
 //will be used in AStar
@@ -404,10 +454,11 @@ void StartlocalSearch(){
 	localMap[6][1] = locationY - localRadius;
 	localMap[7][0] = locationX - localRadius;
 	localMap[7][1] = locationY + localRadius;
+	localP = 0;
 };
 
-void localSearch(){
-	step *stepRoot = (step *)malloc(sizeof(step));
-	step *stepEnd = (step *)malloc(sizeof(step));
-	step *p = stepRoot;
+step *localSearch(){
+	location();
+	localP++;
+	return *AStar(locationX, locationY, localMap[localP-1][0], localMap[localP-1][1]);
 };

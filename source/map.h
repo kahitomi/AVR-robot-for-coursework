@@ -7,7 +7,7 @@
 //Max map size
 #define MaxMapSize 100
 //Same obstacle area
-#define lineArea 20
+#define lineArea 10
 
 typedef struct darkPlace{
 	struct darkPlace *next;

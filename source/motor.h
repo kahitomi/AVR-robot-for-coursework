@@ -42,8 +42,8 @@ void Initi()
 {
     DDRB=0xFF;    //Set portB as output
     //  _delay_ms(500);    //delay 500ms
-   // PORTB |= _BV(PB3);    //always enable PB3 to test if it can rotate it CW or CCW
-  //  PORTB |= _BV(PB4);    //Always enable PB4 to test if it can rotate
+    PORTB |= _BV(PB3);    //always enable PB3 to test if it can rotate it CW or CCW
+    PORTB |= _BV(PB4);    //Always enable PB4 to test if it can rotate
 
 }
 
@@ -100,7 +100,7 @@ void RotateMotorA(uint8_t dir, uint8_t speed)
 
       //set pin3 to logic 0
       PORTB &=~ _BV(PB1);          //Set pin 3 low(logic 0)       so that the motor can drive in one direction
-      OCR0A=speed;                  //generate the PWM output
+     OCR0A=speed;                  //generate the PWM output
       
       break;
       
@@ -142,7 +142,7 @@ void RotateMotorB(uint8_t dir, uint8_t speed)
       PORTB &= ~_BV(PB2);          //Set pin 2 low(logic 0)       
       //set pin12 to logic 1
       PORTB |= _BV(PB5);            //Set pin 3 high(logic 1) so that the motor can drive in another direction
-      OCR0B=speed;                  //generate the PWM output
+       OCR0B=speed;                  //generate the PWM output
 
       break;
       
@@ -161,8 +161,8 @@ void Movement(uint8_t MoveDir)
          break;
          
        case 1:  //forward              //go straight
-          RotateMotorA(1,200);
-          RotateMotorB(1,100);
+          RotateMotorA(1,240);
+          RotateMotorB(1,120);
          break;
          
        case 2:  //backward             
@@ -170,86 +170,43 @@ void Movement(uint8_t MoveDir)
           RotateMotorB(2,100);    
        break;
             
-       case 3:  //turn right
+       case 3:  //turn left 45
           RotateMotorA(2,120);
           RotateMotorB(1,120);
        break;
 
 
-       case 4:   //turn 180
+       case 4:   //turn left 90
           RotateMotorA(2,120);
           RotateMotorB(1,120);
        break;
        
-      case 5:    //turn left
+      case 5:    //turn left 135
           RotateMotorA(1,120);
           RotateMotorB(2,120);
       break;
 
+      case 6:    //turn back
+          RotateMotorA(1,120);
+          RotateMotorB(2,120);
+      break;
+
+      case 7:    //turn right 45
+          RotateMotorA(1,120);
+          RotateMotorB(2,120);
+      break;
+
+      case 8:    //turn right 90
+          RotateMotorA(1,120);
+          RotateMotorB(2,120);
+      break;
+
+      case 9:    //turn right 135
+          RotateMotorA(1,120);
+          RotateMotorB(2,120);
+      break;
+    }
 }
-
-
-}
-
-// int main(void)
-// {     
-//      Initi();
-//      InitPWM();
-
-//      while(1)
-//       {       
-
-//                Movement(5);
-//                _delay_ms(5000);
-//                Movement(3);
-//                _delay_ms(5000);
-//                Movement(3);
-//                _delay_ms(5000);
-//                Movement(4);
-//                _delay_ms(5000);
-//                Movement(5);
-//               //  _delay_ms(3000);
-//              //   RotateMotorA(1,100);
-//              //   _delay_ms(3000);
-//              //   RotateMotorA(0,0);
-//               //  _delay_ms(3000);
-//              //   RotateMotorA(2,20);
-//              //   _delay_ms(3000);
-//               //  RotateMotorA(2,240);
-//              //   _delay_ms(3000);
-
-                  
-//          /*    if (Light <= 100)                   //if in the dark place, instant stop
-//                   {    
-//                     Movement(0);
-//                                                   //disable the enable signal
-//                     PORTB &=~ _BV(PB0);     //Set PortB pin 0 as zero, to stop sending Enable A signal    
-//                     PORTB &=~ _BV(PB1);     //Set PortB pin 0 as zero, to stop sending Enable B signal 
-//                   }
-
-//              else if (Distance <= 100)                 //if in front there is an obstacle, stop and turn right on spot
-//                   {
-//                            Movement(0);    
-//                            Movement(2);  
-//                         if (Distance<=100)              //if there is still an obstacle, turn 180 on spot 
-//                             {
-//                                     Movement(4);             //turn 180 on spot
-//                                    if (Distance<=100)
-//                                     Movement(5);            //left turn  to go back to the previous point
-//                             }
-                                  
-//                    }
-//              else
-//                    {                               
-//                            Movement(1);                                    //go straight
-//                    }   
-//                      */
-
-            
-             
-
-//        }
-// }
 
 
 
