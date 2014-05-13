@@ -4,6 +4,13 @@
 #include <math.h>
 #include "debug.h"
 
+#define turn45Time 1100
+#define turn90Time turn45Time*2-100
+#define turn135Time turn45Time*3-150
+#define turn180Time turn45Time*4-10
+#define Anum 250
+#define Bnum 150
+
 /*
 #define CPU_FOCS 120000000  // cup runns at 12MHz.
 
@@ -42,8 +49,8 @@ void Initi()
 {
     DDRB=0xFF;    //Set portB as output
     //  _delay_ms(500);    //delay 500ms
-    PORTB |= _BV(PB3);    //always enable PB3 to test if it can rotate it CW or CCW
-    PORTB |= _BV(PB4);    //Always enable PB4 to test if it can rotate
+  //  PORTB |= _BV(PB3);    //always enable PB3 to test if it can rotate it CW or CCW
+  //  PORTB |= _BV(PB4);    //Always enable PB4 to test if it can rotate
 
 }
 
@@ -95,23 +102,24 @@ void RotateMotorA(uint8_t dir, uint8_t speed)
       break;
       
     case 1:  //turn clockwise
-       //set pin2 to logic 1
+      //set pin2 to logic 0
+      PORTB &=~ _BV(PB0);          //Set pin 2 low(logic 0)       
+      
+      //set pin3 to logic 1
+      PORTB |= _BV(PB1);            //Set pin 3 high(logic 1) so that the motor can drive in another direction
+      OCR0A=speed; 
+      break;
+      
+    case 2:  //turn counter-clockwise
+                       //generate the PWM output
+
+             //set pin2 to logic 1
       PORTB |= _BV(PB0);            //Set pin 2 high(logic 1)
 
       //set pin3 to logic 0
       PORTB &=~ _BV(PB1);          //Set pin 3 low(logic 0)       so that the motor can drive in one direction
      OCR0A=speed;                  //generate the PWM output
       
-      break;
-      
-    case 2:  //turn counter-clockwise
-      //set pin2 to logic 0
-      PORTB &=~ _BV(PB0);          //Set pin 2 low(logic 0)       
-      
-      //set pin3 to logic 1
-      PORTB |= _BV(PB1);            //Set pin 3 high(logic 1) so that the motor can drive in another direction
-      OCR0A=speed;                  //generate the PWM output
-
       break;
       
   }
@@ -129,7 +137,8 @@ void RotateMotorB(uint8_t dir, uint8_t speed)
       break;
       
     case 1:  //turn clockwise
-       //set pin10 to logic 1
+
+      //set pin10 to logic 1
       PORTB |= _BV(PB2);            //Set pin 10 high(logic 1)
       //set pin12 to logic 0
       PORTB &= ~_BV(PB5);          //Set pin 12 low(logic 0)       so that the motor can drive in one direction
@@ -138,11 +147,15 @@ void RotateMotorB(uint8_t dir, uint8_t speed)
       break;
       
     case 2:  //turn counter-clockwise
+      
+       
+
       //set pin10 to logic 0
       PORTB &= ~_BV(PB2);          //Set pin 2 low(logic 0)       
       //set pin12 to logic 1
       PORTB |= _BV(PB5);            //Set pin 3 high(logic 1) so that the motor can drive in another direction
        OCR0B=speed;                  //generate the PWM output
+
 
       break;
       
@@ -161,49 +174,70 @@ void Movement(uint8_t MoveDir)
          break;
          
        case 1:  //forward              //go straight
-          RotateMotorA(1,240);
-          RotateMotorB(1,120);
+          RotateMotorA(2,Anum);
+          RotateMotorB(2,Bnum);
          break;
          
        case 2:  //backward             
-          RotateMotorA(2,200);
-          RotateMotorB(2,100);    
+          RotateMotorA(1,Anum);
+          RotateMotorB(1,Bnum);    
        break;
             
        case 3:  //turn left 45
-          RotateMotorA(2,120);
-          RotateMotorB(1,120);
+          RotateMotorA(1,Anum);
+          RotateMotorB(2,Bnum);
+          _delay_ms(turn45Time);
+          RotateMotorA(0,0);
+          RotateMotorB(0,0);
        break;
 
 
        case 4:   //turn left 90
-          RotateMotorA(2,120);
-          RotateMotorB(1,120);
+          RotateMotorA(1,Anum);
+          RotateMotorB(2,Bnum);
+          _delay_ms(turn90Time);
+          RotateMotorA(0,0);
+          RotateMotorB(0,0);
        break;
        
       case 5:    //turn left 135
-          RotateMotorA(1,120);
-          RotateMotorB(2,120);
+          RotateMotorA(1,Anum);
+          RotateMotorB(2,Bnum);
+          _delay_ms(turn135Time);
+          RotateMotorA(0,0);
+          RotateMotorB(0,0);
       break;
 
       case 6:    //turn back
-          RotateMotorA(1,120);
-          RotateMotorB(2,120);
+          RotateMotorA(1,Anum);
+          RotateMotorB(2,Bnum);
+          _delay_ms(turn180Time);
+          RotateMotorA(0,0);
+          RotateMotorB(0,0);
       break;
 
       case 7:    //turn right 45
-          RotateMotorA(1,120);
-          RotateMotorB(2,120);
+          RotateMotorA(2,Anum);
+          RotateMotorB(1,Bnum);
+          _delay_ms(turn45Time);
+          RotateMotorA(0,0);
+          RotateMotorB(0,0);
       break;
 
       case 8:    //turn right 90
-          RotateMotorA(1,120);
-          RotateMotorB(2,120);
+          RotateMotorA(2,Anum);
+          RotateMotorB(1,Bnum);
+          _delay_ms(turn90Time);
+          RotateMotorA(0,0);
+          RotateMotorB(0,0);
       break;
 
       case 9:    //turn right 135
-          RotateMotorA(1,120);
-          RotateMotorB(2,120);
+          RotateMotorA(2,Anum);
+          RotateMotorB(1,Bnum);
+          _delay_ms(turn135Time);
+          RotateMotorA(0,0);
+          RotateMotorB(0,0);
       break;
     }
 }

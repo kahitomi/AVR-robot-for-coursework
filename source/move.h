@@ -1,11 +1,12 @@
 #include <stdlib.h>
-#include <time.h>
+// #include <time.h>
 #include <math.h>
 #include "bool.h"
 #include "map.h"
 #include "motor.h"
 
 #define MAX 9999999
+#define SPEED 0.0115
 
 float radius = 30;//=====================This is an important number
 float localRadius = 100; //local search radius
@@ -23,11 +24,14 @@ float locationY = 0.00;
 
 int localP = 0;
 
-double timeStart = 0;
-double timeNow = 0;
+double timer = 0;
 double timePrefer = 0;
 
 float localMap[8][2];
+
+void sdelay(int _time){
+	timer += _time+10;
+};
 
 typedef struct step{
 	struct step *next;
@@ -62,11 +66,25 @@ step *addStep(step *end, float x, float y, int number, short father, float heuri
 	return end;
 };
 
+//location Robot
+void location(){
+	float _travel;
+	_travel = timer*SPEED;
+	locationX = startPointX + cos(angle*PI/180)*_travel;
+	locationY = startPointY + sin(angle*PI/180)*_travel;
+	// locationX = 0;
+	// locationY = 0;
+};
+
 //Move Robot
 void move(float _distance, float _angle){
+	location();
+	startPointX = locationX;
+	startPointY = locationY;
+
 	float _turn = _angle - angle;
 
-	timeStart = clock();
+	// timeStart = clock();
 
 	if(_turn == 0)
 	{
@@ -102,26 +120,25 @@ void move(float _distance, float _angle){
 	}
 	_angle = angle;
 	//movement
-	//if(_distance == -1)
+	// if(_distance == -1)
+	// {
+		Movement(1);
+		//set clock
+		timer = 0;
+	// }
 };
 
 void stop(){
 	Movement(0);
 };
 
-//location Robot
-void location(){};
-
 //if the robot reach the purpose place
 bool ifReach(){
 	location();
-	timeNow = clock();
-	if( timeNow - timeStart >= timePrefer)
+	
+	if(sqrt(pow(locationX-endPointX, 2)+pow(locationY-endPointY, 2)) < 5)
 	{
-		if(abs(locationX-endPointX) < 5 && abs(locationY-endPointY) < 5)
-		{
-			return true;
-		}
+		return true;
 	}
 	return false;
 };
@@ -457,8 +474,9 @@ void StartlocalSearch(){
 	localP = 0;
 };
 
-step *localSearch(){
-	location();
-	localP++;
-	return *AStar(locationX, locationY, localMap[localP-1][0], localMap[localP-1][1]);
-};
+void localSearch(){};
+// step *localSearch(){
+// 	location();
+// 	localP++;
+// 	return *AStar(locationX, locationY, localMap[localP-1][0], localMap[localP-1][1]);
+// };
