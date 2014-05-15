@@ -122,6 +122,7 @@ void move(float _distance, float _angle){
 	//movement
 	// if(_distance == -1)
 	// {
+	timePrefer = _distance/SPEED;
 		Movement(1);
 		//set clock
 		timer = 0;
@@ -135,11 +136,16 @@ void stop(){
 //if the robot reach the purpose place
 bool ifReach(){
 	location();
-	
-	if(sqrt(pow(locationX-endPointX, 2)+pow(locationY-endPointY, 2)) < 5)
+
+	if(abs(timer-timePrefer) < 150)
 	{
 		return true;
 	}
+	
+	// if(sqrt(pow(locationX-endPointX, 2)+pow(locationY-endPointY, 2)) < 5)
+	// {
+	// 	return true;
+	// }
 	return false;
 };
 
@@ -474,9 +480,9 @@ void StartlocalSearch(){
 	localP = 0;
 };
 
-void localSearch(){};
-// step *localSearch(){
-// 	location();
-// 	localP++;
-// 	return *AStar(locationX, locationY, localMap[localP-1][0], localMap[localP-1][1]);
-// };
+// void localSearch(){};
+step *localSearch(){
+	location();
+	localP++;
+	return AStar(locationX, locationY, localMap[localP-1][0], localMap[localP-1][1]);
+};

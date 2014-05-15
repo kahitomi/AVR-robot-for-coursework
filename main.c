@@ -16,6 +16,7 @@ short process = 0; //indicate the process: 0. Random search; 1. go to Dark place
 short stop_sign = 0; //indicate why robot stop moving. 0: unknow, 1: obstacle, 2: under dark, 3: obstacle and dark
 int homeNum = 2; // the number of dark places for robot
 step *robotSteps; //store path
+step *robotGo; //go path
 
 void blink(){
 	PORTB=_BV(PB7); //Outputs 1 on PB7
@@ -87,13 +88,47 @@ void GoToUnknow(){ //Random move
 	}
 }; 
 
-void GoToDark(){ //calculate the nearest dark place the the path to it. Then move
-	// robotSteps = darkRoot->next;
-}; 
-
 void GoToNext(){ // go to the next testStep
-
+	location();
+	float _x = robotGo->X - locationX;
+	float _y = robotGo->Y - locationY;
+	float _duration;
+	float _angleTemp = 90;
+	if(_x == 0)
+	{
+		_duration = _y;
+		_angleTemp = 90;
+	}
+	else
+	{
+		_duration = sqrt(_x*_x+_y*_y);
+		_angleTemp = (float)floor(atan(_y/_x)/PI*180/45)*45;
+	}
+	move(_duration, _angleTemp);
+	if(robotGo->next == NULL)
+	{
+		if(inlocalSearch == false)
+		{
+			inlocalSearch = true;
+			StartlocalSearch();
+			robotSteps = localSearch();
+		}
+	}
+	else
+	{
+		robotGo = robotGo->next;
+	}
 };
+
+void GoToDark(){ //calculate the nearest dark place the the path to it. Then move
+	location();
+	darkPlace *d = darkRoot->next;
+	endPointX = d->X;
+	endPointY = d->Y;
+	robotSteps = AStar(locationX, locationY, d->X, d->Y);
+	robotGo = robotSteps->next;
+	GoToNext();
+}; 
 
 void addO(){
 	location();
@@ -122,7 +157,7 @@ void addO(){
 	}	
 };
 
-void addD(){
+void addD(){ 
 	location();
 	darkPlace *p = darkRoot->next;
 	int i = 0;
@@ -178,12 +213,16 @@ void addD(){
 //       {       
 
 //       			// Movement(1);
-//                Movement(1);
-//                _delay_ms(2000);
-//                sdelay(2000);
+//                Movement(4);
+//                _delay_ms(1000);
+//                Movement(4);
+//                _delay_ms(1000);
+//                Movement(4);
+//                _delay_ms(1000);
+//                Movement(4);
+//                _delay_ms(1000);
 //                Movement(0);
 //                _delay_ms(10000);
-//                sdelay(10000);
 
 //              //   RotateMotorA(1,100);
 //              //   sdelay(3000);
@@ -338,24 +377,23 @@ int main(void)
 						stop();
 						GoToNext();
 					}
-					stop_sign = ifStop();
-					if(stop_sign == 1)
+					if(haveObstacle() == true)
 					{
 						//obstacle
+						stop();
+						addO();
 						if(inlocalSearch == false)
 						{
 							// on the way
-							stop();
-							addO();
 							GoToDark();
 						}
 						else
 						{
 							//local search
-							// localSearch();
+							robotSteps = localSearch();
 						}
 					}
-					else if(stop_sign == 2 || stop_sign == 3)
+					if(haveDarkness() == true)
 					{
 						location();
 						if(abs(endPointX-locationX) < 100 && abs(endPointY-locationY) < 100)
@@ -367,11 +405,6 @@ int main(void)
 						{
 							//ignore it
 						}
-					}
-					if(ifReach())
-					{
-						moving = false;
-						// localSearch();
 					}
 				}
 				else

@@ -4,12 +4,12 @@
 #include <math.h>
 #include "debug.h"
 
-#define turn45Time 1100
-#define turn90Time turn45Time*2-100
-#define turn135Time turn45Time*3-150
-#define turn180Time turn45Time*4-10
+#define turn45Time 1300
+#define turn90Time turn45Time*2-50
+#define turn135Time turn45Time*3-75
+#define turn180Time turn45Time*4-100
 #define Anum 250
-#define Bnum 150
+#define Bnum 130
 
 /*
 #define CPU_FOCS 120000000  // cup runns at 12MHz.

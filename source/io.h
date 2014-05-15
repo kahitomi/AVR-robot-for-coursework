@@ -15,7 +15,7 @@ bool haveObstacle(){
 
 bool haveDarkness(){
 	int _light = v_load();
-	if(_light >= 800)
+	if(_light >= 600)
 	{
 		return true;
 	}
